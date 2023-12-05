@@ -1,3 +1,6 @@
+#2023.10.20-2023.12.5
+#FaithHuangSiHui实验课记录
+
 ##实验一##
 
 data = read.table("D:/RNAseq/Experiment/Biostat/1/习题data.txt")
