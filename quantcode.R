@@ -1,3 +1,77 @@
+# GWAS
+install.packages("qqman")
+if(!requireNamespace("BiocManager",quietly = TRUE))
+install.packages("BiocManager")
+source("http://zzlab.net/GAPIT/GAPIT.library.R")
+source("http://zzlab.net/GAPIT/gapit_functions.txt")
+source("http://zzlab.net/GAPIT/emma.txt")
+install.packages("qqman")
+
+getwd()
+setwd("D:/RNAseq/Experiment/quant/lab3")
+workdir <- getwd()
+
+myY <- read.table("mdp_traits.txt", head = TRUE)
+myG <- read.table("mdp_genotype_test.hmp.txt" ,head = FALSE)
+
+myGAPIT <- GAPIT(
+  Y=myY,
+  G=myG,
+  PCA.total=3)
+
+#View(gwasResults)
+head(gwasResults)
+str(gwasResults)
+#View(snpsOfInterest)
+head(snpsOfInterest)
+vignette("qqman")
+
+#绘制曼哈顿图
+manhattan(gwasResults)
+manhattan(gwasResults, 
+          main = "Manhattan Plot", 
+          ylim =c(0, 10), 
+          cex =0.6, 
+          cex.axis =0.9, 
+          col = c("blue4", "orange3"), 
+          suggestiveline = F,
+          genomewideline = F,
+          chrlabs =c(1:20, "P", "Q"))
+#一条染色体的曼哈顿图
+manhattan(subset(gwasResults, CHR == 1))
+#对3号染色体上一些snp位点进行高亮标注。
+manhattan(gwasResults, highlight = snpsOfInterest)
+# 将高亮显示和限制在单个染色体上，并使用xlim图形参数放大感兴趣的区域(位置在200-500之间)
+manhattan(subset(gwasResults, CHR == 3), highlight = snpsOfInterest, xlim =c(200,500), main = "Chr3")
+# 根据snp的p值对其进行注释,只对每个超过p值阈值的染色体的顶部SNP进行注释
+manhattan(gwasResults, annotatePval =0.01)                                                     
+#标注所有满足阈值的snp:
+manhattan(gwasResults, annotatePval =0.005, annotateTop =FALSE)
+# 添加统计测验
+gwasResults <- transform(gwasResults, zscore = qnorm(P/2,lower.tail =FALSE))
+head(gwasResults)
+# 绘制一个新的图形
+manhattan(gwasResults, 
+          p = "zscore",
+          logp =FALSE, 
+          ylab ="Z-score", 
+          genomewideline =FALSE,  
+          uggestiveline =FALSE, 
+          main = "Manhattan plot of Z-scores")
+
+qq(gwasResults$P)
+qq(gwasResults$P,
+   main = "Q-Q plot of GWAS p-values", 
+   xlim = c(0, 7), 
+   ylim =c(0, 12), 
+   pch =18, 
+   col = "blue4", 
+   cex =1.5, 
+   las = 1)
+
+## ====================
+
+
 getwd()
 setwd("D:/RNAseq/Experiment/quant")
 workdir <- getwd()
